@@ -1,7 +1,7 @@
 """
 This file cointains the main run code for running the GEPCLASS algorithm. 
 Author: Matthijs van Ede
-Date: 16-01-2020 
+Date: 29-01-2020 
 """
 import random
 import operator
@@ -40,13 +40,11 @@ def evaluate(chromosome, terminal, operatorlist, X, n_genes):
             - n_correct: int() number of times the chromosome was correct
     """
 
-    # Om te testen
-    #maximums = [0.9969159576076934, 0.9999219031110207, 0.6593284433098201]
 
     if n_genes == 2: 
-        func_str = tcom.compiler(chromosome, terminal, operatorlist, operator.or_, True)
+        func_str = tcom.compiler(chromosome, terminal, operatorlist, operator.or_, True) # linking function
     elif n_genes > 2: 
-        func_str = tcom.multi_compiler(chromosome, terminal, operatorlist, operator.or_, n_genes) # linking function 
+        func_str = tcom.multi_compiler(chromosome, terminal, operatorlist, operator.and_, n_genes) # linking function 
 
     func = eval(func_str)
     n_correct = 0
@@ -103,7 +101,7 @@ def roulettewheel(gen, gen_fitness, N):
 
 # -------- Start of the algorithm --------
 """
-IT IS NOW SET TO 2D!!!
+IT IS NOW SET TO 4D!!!
 """
 
 # # Defining the dataset for testing
@@ -146,12 +144,14 @@ print("best solution would be:", len(datalist))
 #Creating initial generation
 generation = []
 n_genes = 4 # n_genes = number of genes
+set_headlength = 5 # setting the headlength
+
 for i in range(250):
-    c = chrom.generate_chromosome(n_genes, operatorlist, terminal, 7)
+    c = chrom.generate_chromosome(n_genes, operatorlist, terminal, set_headlength)
     generation.append(c)
 
 
-running = True
+running = False
 runs = 25
 while running: 
     best = [None, 0] # best chromosome, fittness of best chromosme
@@ -194,12 +194,12 @@ while running:
         if rint == 0: 
             new_generation[i] = mod.mutation_uniform(chrm, terminal, operatorlist)
         if rint == 1: 
-            new_generation[i] = mod.mut_IS(chrm, 7)
+            new_generation[i] = mod.mut_IS(chrm, set_headlength)
         if rint == 2: 
-            new_generation[i] = mod.mut_RIS(chrm, operatorlist, 7)
+            new_generation[i] = mod.mut_RIS(chrm, operatorlist, set_headlength)
         if rint == 3: 
             if i != (len(new_generation) - 1): 
-                new_generation[i], new_generation[i+1] = mod.recombination(chrm, new_generation[i+1], terminal, operatorlist, 7)
+                new_generation[i], new_generation[i+1] = mod.recombination(chrm, new_generation[i+1], terminal, operatorlist, set_headlength)
             else:
                 new_generation[i] = mod.mutation_uniform(chrm, terminal, operatorlist)
         
@@ -210,5 +210,8 @@ while running:
   
 print("best chrm:", best[0])
 print("fittness:", best[1])
-#print(tcom.compiler(best[0], terminal, operatorlist, operator.or_, True))
-print(tcom.multi_compiler(best[0], terminal, operatorlist, operator.or_, n_genes))
+if n_genes == 2:
+    print(tcom.compiler(best[0], terminal, operatorlist, operator.or_, True)) # linking function
+else:
+    print(tcom.multi_compiler(best[0], terminal, operatorlist, operator.and_, n_genes)) # linking function
+
